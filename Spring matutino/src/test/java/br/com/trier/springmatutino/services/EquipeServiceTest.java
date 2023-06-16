@@ -92,4 +92,16 @@ public class EquipeServiceTest extends BaseTests{
 		lista = equipeService.findByName("c");
 		assertEquals(0,lista.size());
 	}
+	
+	@Test
+	@DisplayName("Teste deletar equipe inexistente")
+	@Sql({ "classpath:/resources/sqls/equipe.sql" })
+	void deleteNonExistentUserTest() {
+		equipeService.delete(10);
+		List<Equipe> lista = equipeService.listAll();
+		assertEquals(2, lista.size());
+		assertEquals(1, lista.get(0).getId());
+		assertEquals(2, lista.get(1).getId());
+
+	}
 }

@@ -91,5 +91,17 @@ public class PaisServiceTest extends BaseTests{
 		assertEquals(1,lista.size());
 		lista = paisService.findByName("c");
 		assertEquals(0,lista.size());
+	} 
+	
+	@Test
+	@DisplayName("Teste deletar pais inexistente")
+	@Sql({ "classpath:/resources/sqls/pais.sql" })
+	void deleteNonExistentUserTest() {
+		paisService.delete(10);
+		List<Pais> lista = paisService.listAll();
+		assertEquals(2, lista.size());
+		assertEquals(1, lista.get(0).getId());
+		assertEquals(2, lista.get(1).getId());
+
 	}
 }

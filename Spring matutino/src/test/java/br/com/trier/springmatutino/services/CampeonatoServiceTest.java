@@ -95,4 +95,17 @@ public class CampeonatoServiceTest extends BaseTests{
 		lista = campeonatoService.findByDescricao("c");
 		assertEquals(0,lista.size());
 	}
+	
+	@Test
+	@DisplayName("Teste deletar campeonato inexistente")
+	@Sql({ "classpath:/resources/sqls/campeonato.sql" })
+	void deleteNonExistentUserTest() {
+		campeonatoService.delete(10);
+		List<Campeonato> lista = campeonatoService.listAll();
+		assertEquals(3, lista.size());
+		assertEquals(1, lista.get(0).getId());
+		assertEquals(2, lista.get(1).getId());
+		assertEquals(3, lista.get(2).getId());
+
+	}
 }

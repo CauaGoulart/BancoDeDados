@@ -90,12 +90,24 @@ public class UserServiceTest extends BaseTests{
 	}
 	
 	@Test
-	@DisplayName("Teste deletar usuario")
+	@DisplayName("Teste procurar campeonato que começa com")
 	@Sql({"classpath:/resources/sqls/usuario.sql"})
 	void findUserNameStatsWithTest() {
 		List<User> lista = userService.findByName("Usuario teste 2");
 		assertEquals(1,lista.size());
 		lista = userService.findByName("c");
 		assertEquals(0,lista.size());
+	}
+	
+	@Test
+	@DisplayName("Teste deletar usuario inexistente")
+	@Sql({"classpath:/resources/sqls/usuario.sql"})
+	void deleteNonExistentUserTest() {
+		userService.delete(10);
+		List<User> lista = userService.listAll();
+		assertEquals(2,lista.size());
+		assertEquals(1,lista.get(0).getId());
+		assertEquals(2,lista.get(1).getId());
+
 	}
 }
