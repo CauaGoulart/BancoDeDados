@@ -1,7 +1,6 @@
 package br.com.trier.springmatutino.services.impl;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,6 +8,7 @@ import org.springframework.stereotype.Service;
 import br.com.trier.springmatutino.domain.Equipe;
 import br.com.trier.springmatutino.repositories.EquipeRepository;
 import br.com.trier.springmatutino.services.EquipeService;
+import br.com.trier.springmatutino.services.exceptions.ObjetoNaoEncontrado;
 
 @Service
 public class EquipeServiceImpl implements EquipeService{
@@ -28,8 +28,7 @@ public class EquipeServiceImpl implements EquipeService{
 
 	@Override
 	public Equipe findById(Integer id) {
-		Optional<Equipe> obj = repository.findById(id);
-		return obj.orElse(null);
+		return repository.findById(id).orElseThrow(() -> new ObjetoNaoEncontrado("Equipe com id %s não existe".formatted(id)));
 	}
 
 	@Override
@@ -39,15 +38,16 @@ public class EquipeServiceImpl implements EquipeService{
 
 	@Override
 	public void delete(Integer id) {
-		Equipe user = findById(id);
-		if (user != null) {
-			repository.delete(user);
-		}
-
+		Equipe equipe = findById(id);
+		repository.delete(equipe);
 	}
 
 	@Override
-	public List<Equipe> findByName(String name) {
+	public List<Equipe> findByNameIgnoreCase(String name) {
+		List<Equipe> lista = repository.findByName(name);
+		if (lista.size() == 0) {
+			throw new ObjetoNaoEncontrado("Nenhum nome de equipe inicia com %s".formatted(name));
+		}
 		return repository.findByName(name);
 
 	}

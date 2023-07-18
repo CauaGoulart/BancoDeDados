@@ -1,5 +1,6 @@
 package br.com.trier.springmatutino.domain;
 
+import br.com.trier.springmatutino.domain.dto.CampeonatoDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -28,6 +29,14 @@ public class Campeonato {
 	private String descricao;
 	
 	@Column(name = "ano_campeonato")
-	private int ano;
+	private Integer ano;
+	
+	public Campeonato(CampeonatoDTO dto) {
+		this(dto.getId(),dto.getName(), dto.getAno());
+	}
+	
+	public CampeonatoDTO toDto() {
+		return new CampeonatoDTO(this.id,this.descricao,this.ano);
+	}
 
 }

@@ -1,7 +1,6 @@
 package br.com.trier.springmatutino.services.impl;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,6 +8,7 @@ import org.springframework.stereotype.Service;
 import br.com.trier.springmatutino.domain.Pais;
 import br.com.trier.springmatutino.repositories.PaisRepository;
 import br.com.trier.springmatutino.services.PaisService;
+import br.com.trier.springmatutino.services.exceptions.ObjetoNaoEncontrado;
 
 @Service
 public class PaisServiceImlp implements PaisService {
@@ -28,8 +28,7 @@ public class PaisServiceImlp implements PaisService {
 
 	@Override
 	public Pais findById(Integer id) {
-		Optional<Pais> obj = repository.findById(id);
-		return obj.orElse(null);
+		return repository.findById(id).orElseThrow(() -> new ObjetoNaoEncontrado("Pais id %s não existe".formatted(id)));
 	}
 
 	@Override
@@ -39,16 +38,18 @@ public class PaisServiceImlp implements PaisService {
 
 	@Override
 	public void delete(Integer id) {
-		Pais user = findById(id);
-		if (user != null) {
-			repository.delete(user);
-		}
-
+		Pais pais = findById(id);
+		repository.delete(pais);
 	}
 
 	@Override
-	public List<Pais> findByName(String name) {
+	public List<Pais> findByNameIgnoreCase(String name) {
+		List<Pais> lista = repository.findByName(name);
+		if (lista.size() == 0) {
+			throw new ObjetoNaoEncontrado("Nenhum nome de país inicia com %s".formatted(name));
+		}
 		return repository.findByName(name);
+
 	}
 
 }

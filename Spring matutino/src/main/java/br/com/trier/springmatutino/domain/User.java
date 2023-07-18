@@ -1,5 +1,6 @@
 package br.com.trier.springmatutino.domain;
 
+import br.com.trier.springmatutino.domain.dto.UserDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,6 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
@@ -33,5 +35,16 @@ public class User {
 	
 	@Column(name = "senha_usuario")
 	private String password;
+	
+	@Column(name = "permissoes_usuario")
+	private String roles;
+	
+	public User(UserDTO dto) {
+		this(dto.getId(),dto.getName(),dto.getEmail(),dto.getPassword(),dto.getRoles());
+	}
+	
+	public UserDTO toDto() {
+		return new UserDTO(id,name,email,password,roles);
+	}
 
 }

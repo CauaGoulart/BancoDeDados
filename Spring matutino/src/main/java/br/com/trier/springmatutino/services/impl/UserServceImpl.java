@@ -9,48 +9,84 @@ import org.springframework.stereotype.Service;
 import br.com.trier.springmatutino.domain.User;
 import br.com.trier.springmatutino.repositories.UserRepository;
 import br.com.trier.springmatutino.services.UserService;
+import br.com.trier.springmatutino.services.exceptions.ObjetoNaoEncontrado;
+import br.com.trier.springmatutino.services.exceptions.ViolacaoIntegridade;
 
 @Service
 public class UserServceImpl implements UserService {
 
 	@Autowired
 	UserRepository repository;
+		
+	
+	private void findByEmail(User obj) {
+	    Optional<User> existingUser = repository.findByEmail(obj.getEmail());
+	    if (existingUser.isPresent() && !existingUser.get().getId().equals(obj.getId())) {
+	        throw new ViolacaoIntegridade("E-mail não encontrado:%s".formatted(obj.getEmail()));
+	    }
+	}
 
 	@Override
 	public User salvar(User user) {
+		findByEmail(user);
 		return repository.save(user);
 	}
 
 	@Override
 	public List<User> listAll() {
+
 		return repository.findAll();
 	}
 
 	@Override
 	public User findById(Integer id) {
 		Optional<User> obj = repository.findById(id);
-		return obj.orElse(null);
+		return obj.orElseThrow(() -> new ObjetoNaoEncontrado("Usuário %s não encontrado".formatted(id)));
 	}
 
 	@Override
 	public User update(User user) {
+		findByEmail(user);
 		return repository.save(user);
 	}
+
 
 	@Override
 	public void delete(Integer id) {
 		User user = findById(id);
-		if (user != null) {
-			repository.delete(user);
-		}
+		repository.delete(user);	
+	}
+
+
+	@Override
+	public Optional<User> findByNameLike(String name) {
+        Optional<User> lista = repository.findByNameLike(name);
+        		if(lista.isEmpty()) {
+        			throw new ObjetoNaoEncontrado("Nenhum nome de usuário inicia com %s".formatted(name));
+        		}
+		return repository.findByNameLike(name);
 
 	}
 
 	@Override
-	public List<User> findByName(String name) {
-
-		return repository.findByName(name);
+	public Optional<User> findByEmail(String email) {
+		Optional<User> lista = repository.findByEmail(email);
+		if (lista.isEmpty()) {
+			throw new ObjetoNaoEncontrado("Nenhum nome de usuário inicia com %s".formatted(email));
+		}
+		return repository.findByEmail(email);
 
 	}
 
-}
+	@Override
+	public List<User> findByEmailAndPassword(String email, String password) {
+		List<User> lista = repository.findByEmailAndPassword(email,password);
+		if (lista.size() == 0) {
+			throw new ObjetoNaoEncontrado("Nenhum usuario encontrado");
+		}
+		return repository.findByEmailAndPassword(email,password);
+
+	}
+	}
+
+
